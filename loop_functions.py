@@ -23,24 +23,6 @@ class LocalOutlierProbability(object):
     sample (optional, default None)
     :return:
     """"""
-    Based on the work of Kriegel, Kröger, Schubert, and Zimek (2009) in LoOP: 
-    Local Outlier Probabilities.
-    ----------
-    References
-    ----------
-    .. [1] Breunig M., Kriegel H.-P., Ng R., Sander, J. LOF: Identifying 
-            Density-based Local Outliers. ACM SIGMOD
-            International Conference on Management of Data (2000).
-    .. [2] Kriegel H.-P., Kröger P., Schubert E., Zimek A. LoOP: Local Outlier 
-            Probabilities. 18th ACM conference on 
-            Information and knowledge management, CIKM (2009).
-    .. [3] Goldstein M., Uchida S. A Comparative Evaluation of Unsupervised 
-            Anomaly Detection Algorithms for Multivariate Data. PLoS ONE 11(4):
-            e0152173 (2016).
-    .. [4] Hamlet C., Straub J., Russell M., Kerlin S. An incremental and 
-            approximate local outlier probability algorithm for intrusion 
-            detection and its evaluation. Journal of Cyber Security Technology 
-            (2016). 
     """
 
     class Validate:
