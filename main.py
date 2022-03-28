@@ -99,12 +99,12 @@ def main():
 
     if uploaded_file is not None:
         
-        df = pd.read_csv(uploaded_file)
-        st.write(df)
+        df_in = pd.read_csv(uploaded_file)
+        st.write(df_in)
 
         if filetype=='time':
             import dateutil.parser
-            date = df.values[:,0]
+            date = df_in.values[:,0]
             Date = []
             for _ in range(len(date)):
 
@@ -112,11 +112,11 @@ def main():
                 Date.append(datetime.datetime(tdatetime.year, tdatetime.month, tdatetime.day))
             
             Date = np.array(Date)
-            X = np.array(df.values[:,1:]).astype(np.float32)
+            X = np.array(df_in.values[:,1:]).astype(np.float32)
             Nparams = X.shape[1]
 
         else:
-            X = np.array(df.values[:,:]).astype(np.float32)
+            X = np.array(df_in.values[:,:]).astype(np.float32)
             Date = np.array( range(X.shape[0]) )
             Nparams = X.shape[1]
             
@@ -206,7 +206,7 @@ def main():
             # Write the zip file to the buffer
             with zipfile.ZipFile(buffer, "w") as zip:
                 zip.writestr("LoOP_result.csv", csv)
-                zip.writestr(uploaded_file.name, convert_df(df_outcsv))
+                zip.writestr(uploaded_file.name, convert_df(df_in))
                 
                 Codes = ''
                 with open("loop_functions.py", encoding='utf8') as f:
