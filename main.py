@@ -189,7 +189,7 @@ def main():
         st.download_button(
             label="Download calculated LoOPs as CSV",
             data=csv,
-            file_name='loop_out.csv',
+            file_name='LoOP_result.csv',
             mime='text/csv',
         )
 
@@ -198,7 +198,7 @@ def main():
         with io.BytesIO() as buffer:
             # Write the zip file to the buffer
             with zipfile.ZipFile(buffer, "w") as zip:
-                zip.writestr("LoOP_results.csv", csv)
+                zip.writestr("LoOP_result.csv", csv)
                 zip.writestr(uploaded_file.name, convert_df(df))
                 
                 Codes = ''
