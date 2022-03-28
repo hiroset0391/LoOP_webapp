@@ -58,9 +58,10 @@ def main():
 
     
     filetype = 'nontime'
-    if st.checkbox('時系列データの場合はチェック'):
+    if st.checkbox('時系列データの場合はチェック（CSVファイルの1列目は日時のデータとして扱われます）'):
         filetype = 'time'
 
+    
 
     uploaded_file = st.file_uploader(label='', type=['csv'])
     st.write('input: ', uploaded_file)
@@ -71,12 +72,13 @@ def main():
         st.write(df)
 
         if filetype=='time':
-        
+            import dateutil.parser
             date = df.values[:,0]
             Date = []
             for _ in range(len(date)):
-                tdatetime = datetime.datetime.strptime( date[_], '%Y-%m-%d') 
-                Date.append(datetime.date(tdatetime.year, tdatetime.month, tdatetime.day))
+
+                tdatetime = dateutil.parser.parse(date[_]) 
+                Date.append(datetime.datetime(tdatetime.year, tdatetime.month, tdatetime.day))
 
             X = np.array(df.values[:,1:]).astype(np.float32)
 
@@ -139,7 +141,7 @@ def main():
             mime='text/csv',
         )
 
-        st.markdown('### サンプルスクリプトをダウンロード')
+        st.markdown('### サンプルコードをダウンロード')
         # Create an in-memory buffer to store the zip file
         with io.BytesIO() as buffer:
             # Write the zip file to the buffer
@@ -175,9 +177,9 @@ def main():
             buffer.seek(0)
 
             st.download_button(
-                label="Download sample scripts as ZIP",
+                label="Download sample code as ZIP",
                 data=buffer,  # Download buffer
-                file_name="samples.zip" 
+                file_name="sample.zip" 
             )
 
         
