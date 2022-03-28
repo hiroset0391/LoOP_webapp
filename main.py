@@ -88,11 +88,6 @@ def main():
     
     st.markdown('### CSVファイルをアップロードしてLoOPを計算')
     
-    # filetype = 'nontime'
-    # if st.checkbox('時系列データの場合はチェック（CSVファイルの1列目は日時のデータとして扱われます）'):
-    #     filetype = 'time'
-
-    
 
     uploaded_file = st.file_uploader(label='', type=['csv'])
     st.write('input: ', uploaded_file)
@@ -131,7 +126,7 @@ def main():
         col1, col2, col3 = st.columns(3)
 
         col1.markdown('##### neighborhood size')
-        col1.markdown('LoOP計算に用いる近傍点の数。小さすぎるとLoOPの計算が不安定になる。')
+        col1.markdown('LoOP計算に用いる近傍点の数。小さすぎるとLoOPの計算が不安定になることがある。')
         n_neighbors = col1.slider("", 3, X_scores.shape[0]-1, 10, 1)
 
         col2.markdown('##### ')
