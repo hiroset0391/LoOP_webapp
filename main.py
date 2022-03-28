@@ -47,7 +47,18 @@ plt.rcParams['text.color'] = '#08192D' # annotate, labelの色
 plt.rcParams['legend.framealpha'] = 1.0 # legendの枠の透明度
 plt.rcParams['pdf.fonttype'] = 42
 
+def normalize(X):
+    if X.shape[1]==1:
+        X = np.stack([X[:,0], np.zeros(X.shape[0])], 1) 
+        
+    else:
+        for col in range(X.shape[1]):
+            Q1 = np.nanpercentile(X[:,col], 25)
+            Q2 = np.nanpercentile(X[:,col], 50)
+            Q3 = np.nanpercentile(X[:,col], 75)
+            X[:,col] = (X[:,col]-Q2)/(Q3-Q1)
     
+    return X
 
 
 def main():
@@ -86,16 +97,9 @@ def main():
             Date = list( range(X.shape[0]) )
             Nparams = X.shape[1]
 
-        if X.shape[1]==1:
-            X = np.stack([X[:,0], np.zeros(X.shape[0])], 1) 
-            
-        else:
-            for col in range(X.shape[1]):
-                Q1 = np.nanpercentile(X[:,col], 25)
-                Q2 = np.nanpercentile(X[:,col], 50)
-                Q3 = np.nanpercentile(X[:,col], 75)
-                X[:,col] = (X[:,col]-Q2)/(Q3-Q1)
-               
+        
+        
+        X = normalize(X) 
         
         st.markdown('#### LoOP計算のパラメータを設定')
         col1, col2, col3 = st.columns(3)
