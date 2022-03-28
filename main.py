@@ -88,9 +88,9 @@ def main():
     
     st.markdown('### CSVファイルをアップロードしてLoOPを計算')
     
-    filetype = 'nontime'
-    if st.checkbox('時系列データの場合はチェック（CSVファイルの1列目は日時のデータとして扱われます）'):
-        filetype = 'time'
+    # filetype = 'nontime'
+    # if st.checkbox('時系列データの場合はチェック（CSVファイルの1列目は日時のデータとして扱われます）'):
+    #     filetype = 'time'
 
     
 
@@ -102,7 +102,8 @@ def main():
         df_in = pd.read_csv(uploaded_file)
         st.write(df_in)
 
-        if filetype=='time':
+        try:
+            filetype = 'time'
             import dateutil.parser
             date = df_in.values[:,0]
             Date = []
@@ -115,7 +116,8 @@ def main():
             X = np.array(df_in.values[:,1:]).astype(np.float32)
             Nparams = X.shape[1]
 
-        else:
+        except:
+            filetype = 'nontime'
             X = np.array(df_in.values[:,:]).astype(np.float32)
             Date = np.array( range(X.shape[0]) )
             Nparams = X.shape[1]
@@ -214,6 +216,7 @@ def main():
                         Codes += s_line
                 
                 zip.writestr("loop_functions.py", Codes)
+                f.close()
 
                 Codes = ''
                 path = 'template.py'
@@ -237,7 +240,7 @@ def main():
                             Codes += s_line
                 
                 zip.writestr("sample_main.py", Codes)
-
+                f.close()
 
             buffer.seek(0)
 
