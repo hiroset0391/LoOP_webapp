@@ -175,7 +175,13 @@ def main():
         plt.tight_layout()
         st.pyplot(fig)
 
-        st.write(pd.DataFrame({'date': Date, 'LoOP': scores}))
+
+        if filetype=='time':
+            df_outcsv = pd.DataFrame({'date': Date, 'LoOP': scores})
+        else:
+            df_outcsv = pd.DataFrame({'data_index': Date, 'LoOP': scores})
+        
+        st.write(df_outcsv)
 
 
         
@@ -185,11 +191,6 @@ def main():
             # IMPORTANT: Cache the conversion to prevent computation on every rerun
             return df.to_csv().encode('utf-8')
 
-        if filetype=='time':
-            df_outcsv = pd.DataFrame({'date': Date, 'LoOP': scores})
-        else:
-            df_outcsv = pd.DataFrame({'data_index': Date, 'LoOP': scores})
-            
         csv = convert_df(df_outcsv)
 
         st.download_button(
