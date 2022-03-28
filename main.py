@@ -185,7 +185,13 @@ def main():
             # IMPORTANT: Cache the conversion to prevent computation on every rerun
             return df.to_csv().encode('utf-8')
 
-        csv = convert_df(pd.DataFrame({'date': Date, 'LoOP': scores}))
+        if filetype=='time':
+            df_outcsv = pd.DataFrame({'date': Date, 'LoOP': scores})
+        else:
+            df_outcsv = pd.DataFrame({'data_index': Date, 'LoOP': scores})
+            
+        csv = convert_df(df_outcsv)
+
         st.download_button(
             label="Download calculated LoOPs as CSV",
             data=csv,
@@ -199,7 +205,7 @@ def main():
             # Write the zip file to the buffer
             with zipfile.ZipFile(buffer, "w") as zip:
                 zip.writestr("LoOP_result.csv", csv)
-                zip.writestr(uploaded_file.name, convert_df(df))
+                zip.writestr(uploaded_file.name, convert_df(df_outcsv))
                 
                 Codes = ''
                 with open("loop_functions.py", encoding='utf8') as f:
