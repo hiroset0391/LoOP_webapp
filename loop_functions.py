@@ -10,6 +10,35 @@ except ImportError:
 
 
 
+class Utils:
+
+    @staticmethod
+    def emit_progress_bar(progress: str, index: int, total: int) -> str:
+        """
+        A progress bar that is continuously updated in Python's standard
+        out.
+        :param progress: a string printed to stdout that is updated and later
+        returned.
+        :param index: the current index of the iteration within the tracked
+        process.
+        :param total: the total length of the tracked process.
+        :return: progress string.
+        """
+
+        w, h = get_terminal_size()
+        sys.stdout.write("\r")
+        if total < w:
+            block_size = int(w / total)
+        else:
+            block_size = int(total / w)
+        if index % block_size == 0:
+            progress += "="
+        percent = index / total
+        sys.stdout.write("[ %s ] %.2f%%" % (progress, percent * 100))
+        sys.stdout.flush()
+        return progress
+
+
 class LocalOutlierProbability(object):
     """
     :param data: a Pandas DataFrame or Numpy array of float data
@@ -22,7 +51,24 @@ class LocalOutlierProbability(object):
     sample (optional, default None)
     :return:
     """"""
-    
+    Based on the work of Kriegel, Kröger, Schubert, and Zimek (2009) in LoOP: 
+    Local Outlier Probabilities.
+    ----------
+    References
+    ----------
+    .. [1] Breunig M., Kriegel H.-P., Ng R., Sander, J. LOF: Identifying 
+            Density-based Local Outliers. ACM SIGMOD
+            International Conference on Management of Data (2000).
+    .. [2] Kriegel H.-P., Kröger P., Schubert E., Zimek A. LoOP: Local Outlier 
+            Probabilities. 18th ACM conference on 
+            Information and knowledge management, CIKM (2009).
+    .. [3] Goldstein M., Uchida S. A Comparative Evaluation of Unsupervised 
+            Anomaly Detection Algorithms for Multivariate Data. PLoS ONE 11(4):
+            e0152173 (2016).
+    .. [4] Hamlet C., Straub J., Russell M., Kerlin S. An incremental and 
+            approximate local outlier probability algorithm for intrusion 
+            detection and its evaluation. Journal of Cyber Security Technology 
+            (2016). 
     """
 
     class Validate:
@@ -510,7 +556,7 @@ class LocalOutlierProbability(object):
         compute = numba.jit(self._compute_distance_and_neighbor_matrix,
                             cache=True) if self.use_numba else \
             self._compute_distance_and_neighbor_matrix
-        
+        progress = "="
         for cluster_id in set(self._cluster_labels()):
             indices = np.where(self._cluster_labels() == cluster_id)
             clust_points_vector = np.array(
@@ -520,7 +566,10 @@ class LocalOutlierProbability(object):
             # a generator that yields an updated distance matrix on each loop
             for c in compute(clust_points_vector, indices, distances, indexes):
                 distances, indexes, i = c
-                
+                # update the progress bar
+                if progress_bar is True:
+                    progress = Utils.emit_progress_bar(
+                        progress, i+1, clust_points_vector.shape[0])
 
         self.distance_matrix = distances
         self.neighbor_matrix = indexes
@@ -697,6 +746,8 @@ class LocalOutlierProbability(object):
             sys.exit()
 
         store = self._store()
+        if self.data is not None:
+            self._distances(progress_bar=self.progress_bar)
         store = self._assign_distances(store)
         store = self._ssd(store)
         store = self._standard_distances(store)
