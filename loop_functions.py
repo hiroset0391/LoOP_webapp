@@ -697,8 +697,6 @@ class LocalOutlierProbability(object):
             sys.exit()
 
         store = self._store()
-        if self.data is not None:
-            self._distances(progress_bar=self.progress_bar)
         store = self._assign_distances(store)
         store = self._ssd(store)
         store = self._standard_distances(store)
