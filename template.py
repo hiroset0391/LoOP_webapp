@@ -26,8 +26,24 @@ if __name__ == '__main__':
     for _ in range(len(date)):
         tdatetime = datetime.datetime.strptime( date[_], '%Y-%m-%d') 
         Date.append(datetime.date(tdatetime.year, tdatetime.month, tdatetime.day))
+
+    try:
+        import dateutil.parser
+        date = df.values[:,0]
+        Date = []
+        for _ in range(len(date)):
+            tdatetime = dateutil.parser.parse(date[_]) 
+            Date.append(datetime.datetime(tdatetime.year, tdatetime.month, tdatetime.day))
+
+        X = np.array(df.values[:,1:]).astype(np.float32)
+        
+    except:
+        X = np.array(df.values[:,:]).astype(np.float32)
+        Date = list( range(X.shape[0]) )
+        
     
     X = np.array(df.values[:,1:]).astype(np.float32)
+    X = loop_functions.normalize(X) 
     
     scores = loop_functions.LocalOutlierProbability(X, extent=extent, n_neighbors=n_neighbors, use_numba=True).fit().local_outlier_probabilities
     scores *= 100
