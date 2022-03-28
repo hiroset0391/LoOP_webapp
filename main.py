@@ -53,6 +53,7 @@ def normalize(X):
         
     else:
         for col in range(X.shape[1]):
+            ### robust z score
             Q1 = np.nanpercentile(X[:,col], 25)
             Q2 = np.nanpercentile(X[:,col], 50)
             Q3 = np.nanpercentile(X[:,col], 75)
@@ -116,6 +117,7 @@ def main():
         scores *= 100
         
         st.markdown('#### LoOPの計算結果のプロット')
+        st.markdown('1段目:LoOP,  2段目以降:入力したデータ')
         Npanels = Nparams+1
         fig = plt.figure(figsize=(10, 2.5*Npanels))
         ax1 = plt.subplot(Npanels,1,1)
