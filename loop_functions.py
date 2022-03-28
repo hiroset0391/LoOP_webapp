@@ -1,43 +1,13 @@
 from math import erf, sqrt
 import numpy as np
-from python_utils.terminal import get_terminal_size
 import sys
 from typing import Tuple, Union
 import warnings
-
 try:
     import numba
 except ImportError:
     pass
 
-
-class Utils:
-
-    @staticmethod
-    def emit_progress_bar(progress: str, index: int, total: int) -> str:
-        """
-        A progress bar that is continuously updated in Python's standard
-        out.
-        :param progress: a string printed to stdout that is updated and later
-        returned.
-        :param index: the current index of the iteration within the tracked
-        process.
-        :param total: the total length of the tracked process.
-        :return: progress string.
-        """
-
-        w, h = get_terminal_size()
-        sys.stdout.write("\r")
-        if total < w:
-            block_size = int(w / total)
-        else:
-            block_size = int(total / w)
-        if index % block_size == 0:
-            progress += "="
-        percent = index / total
-        sys.stdout.write("[ %s ] %.2f%%" % (progress, percent * 100))
-        sys.stdout.flush()
-        return progress
 
 
 class LocalOutlierProbability(object):
@@ -540,7 +510,7 @@ class LocalOutlierProbability(object):
         compute = numba.jit(self._compute_distance_and_neighbor_matrix,
                             cache=True) if self.use_numba else \
             self._compute_distance_and_neighbor_matrix
-        progress = "="
+        
         for cluster_id in set(self._cluster_labels()):
             indices = np.where(self._cluster_labels() == cluster_id)
             clust_points_vector = np.array(
@@ -550,10 +520,7 @@ class LocalOutlierProbability(object):
             # a generator that yields an updated distance matrix on each loop
             for c in compute(clust_points_vector, indices, distances, indexes):
                 distances, indexes, i = c
-                # update the progress bar
-                if progress_bar is True:
-                    progress = Utils.emit_progress_bar(
-                        progress, i+1, clust_points_vector.shape[0])
+                
 
         self.distance_matrix = distances
         self.neighbor_matrix = indexes
