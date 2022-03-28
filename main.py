@@ -110,7 +110,7 @@ def main():
         if filetype=='time':
             ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d\n%Y'))
         else:
-            ax1.set_xlabel('Date index')
+            ax1.set_xlabel('Data index', fontsize=16)
 
         ax1.set_xlim(Date[0], Date[-1])
         ax1.set_ylim(0,100)
