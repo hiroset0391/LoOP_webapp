@@ -8,6 +8,19 @@ import pandas as pd
 import numpy as np
 import loop_functions
 
+def normalize(X):
+    if X.shape[1]==1:
+        X = np.stack([X[:,0], np.zeros(X.shape[0])], 1) 
+        
+    else:
+        for col in range(X.shape[1]):
+            Q1 = np.nanpercentile(X[:,col], 25)
+            Q2 = np.nanpercentile(X[:,col], 50)
+            Q3 = np.nanpercentile(X[:,col], 75)
+            X[:,col] = (X[:,col]-Q2)/(Q3-Q1)
+    
+    return X
+
 if __name__ == '__main__':
 
     """
@@ -43,7 +56,7 @@ if __name__ == '__main__':
         
     
     X = np.array(df.values[:,1:]).astype(np.float32)
-    X = loop_functions.normalize(X) 
+    X = normalize(X) 
     
     scores = loop_functions.LocalOutlierProbability(X, extent=extent, n_neighbors=n_neighbors, use_numba=True).fit().local_outlier_probabilities
     scores *= 100
