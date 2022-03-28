@@ -50,11 +50,7 @@ if __name__ == '__main__':
     Calculate LoOP [%]
     """
     df = pd.read_csv(csv_name)
-    date = df.values[:,0]
-    Date = []
-    for _ in range(len(date)):
-        tdatetime = datetime.datetime.strptime( date[_], '%Y-%m-%d') 
-        Date.append(datetime.date(tdatetime.year, tdatetime.month, tdatetime.day))
+    
 
     if time_series:
         import dateutil.parser
