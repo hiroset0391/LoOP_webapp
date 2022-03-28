@@ -55,7 +55,6 @@ def main():
     st.title('Local Outlier Probabilities (LoOPs) 計算アプリ')
     
     st.markdown('### CSVファイルをアップロードしてLoOPを計算')
-
     
     filetype = 'nontime'
     if st.checkbox('時系列データの場合はチェック（CSVファイルの1列目は日時のデータとして扱われます）'):
@@ -81,11 +80,11 @@ def main():
                 Date.append(datetime.datetime(tdatetime.year, tdatetime.month, tdatetime.day))
 
             X = np.array(df.values[:,1:]).astype(np.float32)
-
+            Nparams = X.shape[1]
         else:
             X = np.array(df.values[:,:]).astype(np.float32)
             Date = list( range(X.shape[0]) )
-        
+            Nparams = X.shape[1]
         
         
         st.markdown('#### LoOP計算のパラメータを設定')
@@ -103,8 +102,9 @@ def main():
         scores *= 100
         
         st.markdown('#### LoOPの計算結果のプロット')
-        fig = plt.figure(figsize=(8, 6))
-        ax1 = plt.subplot(211)
+        Npanels = Nparams+1
+        fig = plt.figure(figsize=(10, 2.5*Npanels))
+        ax1 = plt.subplot(Npanels,1,1)
 
         ax1.plot(Date, scores, 'o-')
         if filetype=='time':
@@ -116,11 +116,17 @@ def main():
         ax1.set_ylim(0,100)
         ax1.set_ylabel('LoOP [%]', fontsize=16)
 
-        ax2 = plt.subplot(212)
-        ax2.hist(scores, range=(0,100))
-        ax2.set_xlim(0,100)
-        ax2.set_xlabel('LoOP [%]', fontsize=16)
-        ax2.set_ylabel('Counts', fontsize=16)
+        for cc, row in enumerate(range(2,Nparams+2)):
+            ax2 = plt.subplot(Npanels,1,row)
+            ax2.plot(Date, X[:,cc], color='C'+str(cc+1), marker='o')
+            if filetype=='time':
+                ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d\n%Y'))
+            else:
+                ax2.set_xlabel('Data index', fontsize=16)
+
+            ax2.set_xlim(Date[0], Date[-1])
+            ax2.set_ylabel('Obs. '+str(cc+1), fontsize=16)
+    
 
         plt.tight_layout()
         st.pyplot(fig)
