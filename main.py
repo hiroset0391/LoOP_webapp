@@ -117,7 +117,7 @@ def main():
         scores *= 100
         
         st.markdown('#### LoOPの計算結果のプロット')
-        st.markdown('1段目:LoOP,  2段目以降:入力したデータ')
+        st.markdown('1段目:LoOP,  2段目以降:LoOPの計算に使用したしたデータ')
         Npanels = Nparams+1
         fig = plt.figure(figsize=(10, 2.5*Npanels))
         ax1 = plt.subplot(Npanels,1,1)
