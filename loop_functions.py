@@ -8,19 +8,6 @@ try:
 except ImportError:
     pass
 
-def normalize(X):
-    if X.shape[1]==1:
-        X = np.stack([X[:,0], np.zeros(X.shape[0])], 1) 
-        
-    else:
-        for col in range(X.shape[1]):
-            Q1 = np.nanpercentile(X[:,col], 25)
-            Q2 = np.nanpercentile(X[:,col], 50)
-            Q3 = np.nanpercentile(X[:,col], 75)
-            X[:,col] = (X[:,col]-Q2)/(Q3-Q1)
-    
-    return X
-               
 
 
 class LocalOutlierProbability(object):
