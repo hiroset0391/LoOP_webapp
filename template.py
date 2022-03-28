@@ -15,13 +15,26 @@ def normalize(X):
         
     else:
         for col in range(X.shape[1]):
-            ### robust z score
-            Q1 = np.nanpercentile(X[:,col], 25)
-            Q2 = np.nanpercentile(X[:,col], 50)
-            Q3 = np.nanpercentile(X[:,col], 75)
-            X[:,col] = (X[:,col]-Q2)/(Q3-Q1)
+            X[:,col] = (X[:,col]-np.nanmean(X[:,col])) / np.nanstd(X[:,col])
     
     return X
+
+def remove_nan(X, Date):
+    nnan_idx = ~np.isnan(X).any(axis=1)
+    X = X[nnan_idx, :]
+    Date = Date[nnan_idx]
+    return X, Date
+
+def score_fillnan(scores, Date, Date_scores):
+    
+    scores_new = np.zeros(len(Date))*np.nan
+    for dd, fday in enumerate(Date):
+        idx = np.where(Date_scores==fday)[0]
+        if len(idx)>0:
+            scores_new[dd] = scores[idx]  
+        else:
+            pass
+    return scores_new
 
 if __name__ == '__main__':
 
@@ -31,6 +44,7 @@ if __name__ == '__main__':
     csv_name = 'test.csv'
     extent = 3
     n_neighbors = 10
+    time_series = True
 
     """
     Calculate LoOP [%]
@@ -42,7 +56,7 @@ if __name__ == '__main__':
         tdatetime = datetime.datetime.strptime( date[_], '%Y-%m-%d') 
         Date.append(datetime.date(tdatetime.year, tdatetime.month, tdatetime.day))
 
-    try:
+    if time_series:
         import dateutil.parser
         date = df.values[:,0]
         Date = []
@@ -52,19 +66,23 @@ if __name__ == '__main__':
 
         X = np.array(df.values[:,1:]).astype(np.float32)
         
-    except:
+    else:
         X = np.array(df.values[:,:]).astype(np.float32)
         Date = list( range(X.shape[0]) )
         
     
     X = np.array(df.values[:,1:]).astype(np.float32)
-    X = normalize(X) 
-    
-    scores = loop_functions.LocalOutlierProbability(X, extent=extent, n_neighbors=n_neighbors, use_numba=True).fit().local_outlier_probabilities
+
+    X_scores, Date_scores = remove_nan(X, Date)
+    X_scores = normalize(X_scores) 
+
+    scores = loop_functions.LocalOutlierProbability(X_scores, extent=extent, n_neighbors=n_neighbors, use_numba=True).fit().local_outlier_probabilities
     scores *= 100
+
+    scores = score_fillnan(scores, Date, Date_scores)
 
     """
     Output 
     """
     df_out = pd.DataFrame({'date': Date, 'LoOP': scores})
-    df_out.to_csv('loop_out.csv')
+    df_out.to_csv('loop_result.csv')
