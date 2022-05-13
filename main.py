@@ -19,32 +19,31 @@ import loop_functions
 
 
 
-import matplotlib as mpl
-mpl.use('Qt5Agg')
-plt.style.use(['science', 'nature'])
-# plt.rcParams['mathtext.fontset'] = 'stix' # math fontの設定
-plt.rcParams['xtick.labelsize'] = 12
-plt.rcParams['ytick.labelsize'] = 12
-plt.rcParams['axes.linewidth'] = 1.2 #軸の太さを設定。目盛りは変わらない
-plt.rcParams['xtick.major.width'] = 1.0
-plt.rcParams['ytick.major.width'] = 1.0
-plt.rcParams['xtick.minor.width'] = 1.0
-plt.rcParams['ytick.minor.width'] = 1.0
-plt.rcParams['xtick.direction'] = "out"
-plt.rcParams['ytick.direction'] = "out"
-plt.rcParams['xtick.major.size'] = 4.0
-plt.rcParams['xtick.minor.size'] = 3.0
-plt.rcParams['ytick.major.size'] = 4.0
-plt.rcParams['ytick.minor.size'] = 3.0
-# plt.rcParams['xtick.major.pad']='8'
-# plt.rcParams['xtick.top'] = True
-# plt.rcParams['ytick.right'] = True
-# plt.rcParams['axes.edgecolor'] = '#08192D' # 枠の色
-# plt.rcParams['axes.labelcolor'] = '#08192D' # labelの色
-# plt.rcParams['xtick.color'] = '#08192D' # xticksの色
-# plt.rcParams['ytick.color'] = '#08192D' # yticksの色
-# plt.rcParams['text.color'] = '#08192D' # annotate, labelの色
-# plt.rcParams['legend.framealpha'] = 1.0 # legendの枠の透明度
+plt.rcParams['font.family']= "DejaVu Serif"
+plt.rcParams['font.sans-serif'] = ['Helvetica']
+plt.rcParams['mathtext.fontset'] = 'stix' # math fontの設定
+plt.rcParams['xtick.labelsize'] = 14
+plt.rcParams['ytick.labelsize'] = 14
+plt.rcParams['axes.linewidth'] = 1.5 #軸の太さを設定。目盛りは変わらない
+plt.rcParams['xtick.major.width'] = 1.5
+plt.rcParams['ytick.major.width'] = 1.5
+plt.rcParams['xtick.minor.width'] = 1.5
+plt.rcParams['ytick.minor.width'] = 1.5
+plt.rcParams['xtick.direction'] = "in"
+plt.rcParams['ytick.direction'] = "in"
+plt.rcParams['xtick.major.size'] = 6.0
+plt.rcParams['xtick.minor.size'] = 4.0
+plt.rcParams['ytick.major.size'] = 6.0
+plt.rcParams['ytick.minor.size'] = 4.0
+plt.rcParams['xtick.major.pad']='8'
+plt.rcParams['xtick.top'] = True
+plt.rcParams['ytick.right'] = True
+plt.rcParams['axes.edgecolor'] = '#08192D' # 枠の色
+plt.rcParams['axes.labelcolor'] = '#08192D' # labelの色
+plt.rcParams['xtick.color'] = '#08192D' # xticksの色
+plt.rcParams['ytick.color'] = '#08192D' # yticksの色
+plt.rcParams['text.color'] = '#08192D' # annotate, labelの色
+plt.rcParams['legend.framealpha'] = 1.0 # legendの枠の透明度
 plt.rcParams['pdf.fonttype'] = 42
 
 def normalize(X):
