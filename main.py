@@ -269,107 +269,107 @@ def main():
         
         ### 初回。LoOPは必ず新規計算。
             
-            if filetype == 'time':
-                startday_quiet = datetime.datetime(startday_quiet.year, startday_quiet.month, startday_quiet.day)
-                endday_quiet = datetime.datetime(endday_quiet.year, endday_quiet.month, endday_quiet.day)
-            else:
-                pass
+        if filetype == 'time':
+            startday_quiet = datetime.datetime(startday_quiet.year, startday_quiet.month, startday_quiet.day)
+            endday_quiet = datetime.datetime(endday_quiet.year, endday_quiet.month, endday_quiet.day)
+        else:
+            pass
 
-            if startday_quiet==Date[0] and endday_quiet==Date[-1]:
-                scores = loop_functions.LocalOutlierProbability(X_scores, extent=extent, n_neighbors=n_neighbors, use_numba=True).fit().local_outlier_probabilities
-                scores *= 100
-            else:
-                scores = []
-                for currdate in Date:
-                    daily_loop = compute_loop([startday_quiet, endday_quiet], Date, currdate, X, extent=extent, n_neighbors=n_neighbors)
-                    scores.append(daily_loop*100)
-                scores = np.array(scores)
+        if startday_quiet==Date[0] and endday_quiet==Date[-1]:
+            scores = loop_functions.LocalOutlierProbability(X_scores, extent=extent, n_neighbors=n_neighbors, use_numba=True).fit().local_outlier_probabilities
+            scores *= 100
+        else:
+            scores = []
+            for currdate in Date:
+                daily_loop = compute_loop([startday_quiet, endday_quiet], Date, currdate, X, extent=extent, n_neighbors=n_neighbors)
+                scores.append(daily_loop*100)
+            scores = np.array(scores)
+    
+    
+
+        scores = score_fillnan(scores, Date, Date_scores)
         
+
+        st.markdown('#### LoOPの計算結果のプロット')
+        st.markdown('1段目:LoOP,  2段目以降:LoOPの計算に使用したデータ')
         
-
-            scores = score_fillnan(scores, Date, Date_scores)
-            
-
-            st.markdown('#### LoOPの計算結果のプロット')
-            st.markdown('1段目:LoOP,  2段目以降:LoOPの計算に使用したデータ')
-            
-            make_plot(Date, scores, X, filetype, Nparams)
+        make_plot(Date, scores, X, filetype, Nparams)
 
 
-            if filetype=='time':
-                df_outcsv = pd.DataFrame({'date': Date, 'LoOP': scores})
-            else:
-                df_outcsv = pd.DataFrame({'data_index': Date, 'LoOP': scores})
-            
-            st.write(df_outcsv)
+        if filetype=='time':
+            df_outcsv = pd.DataFrame({'date': Date, 'LoOP': scores})
+        else:
+            df_outcsv = pd.DataFrame({'data_index': Date, 'LoOP': scores})
+        
+        st.write(df_outcsv)
 
-            
-            st.markdown('### LoOPの計算結果をCSVファイルでダウンロード')
-            
-            csv = convert_df(df_outcsv)
+        
+        st.markdown('### LoOPの計算結果をCSVファイルでダウンロード')
+        
+        csv = convert_df(df_outcsv)
+
+        st.download_button(
+            label="Download calculated LoOPs as CSV",
+            data=csv,
+            file_name='LoOP_result.csv',
+            mime='text/csv'
+        )
+        
+        st.markdown('### サンプルコードをダウンロード')
+        # Create an in-memory buffer to store the zip file
+        with io.BytesIO() as buffer:
+            # Write the zip file to the buffer
+            with zipfile.ZipFile(buffer, "w") as zip:
+                zip.writestr("LoOP_result.csv", csv)
+                zip.writestr(uploaded_file.name, convert_df(df_in))
+                
+                Codes = ''
+                with open("loop_functions.py", encoding='utf8') as f:
+                    for s_line in f:
+                        Codes += s_line
+                
+                zip.writestr("loop_functions.py", Codes)
+                f.close()
+
+                Codes = ''
+                path = 'template.py'
+                csv_name = uploaded_file.name
+                filetype_bool = False
+                if filetype=='time':
+                    filetype_bool = True
+
+                with open(path, encoding='utf8') as f:
+                    for s_line in f:
+                        
+                        if 'csv_name =' in s_line:
+                            Codes += '    csv_name = "'+csv_name+'"\n'
+                        elif 'extent =' in s_line:
+                            Codes += '    extent = '+str(int(extent))+'\n'
+                        elif 'n_neighbors =' in s_line:
+                            Codes += '    n_neighbors = '+str(n_neighbors)+'\n'
+                        elif 'time_series =' in s_line:
+                            Codes += '    time_series = '+str(filetype_bool)+'\n'
+                        else:
+                            Codes += s_line
+                
+                zip.writestr("sample_main.py", Codes)
+                f.close()
+
+            buffer.seek(0)
 
             st.download_button(
-                label="Download calculated LoOPs as CSV",
-                data=csv,
-                file_name='LoOP_result.csv',
-                mime='text/csv'
+                label="Download sample code as ZIP",
+                data=buffer,  # Download buffer
+                file_name="sample.zip" 
             )
-            
-            st.markdown('### サンプルコードをダウンロード')
-            # Create an in-memory buffer to store the zip file
-            with io.BytesIO() as buffer:
-                # Write the zip file to the buffer
-                with zipfile.ZipFile(buffer, "w") as zip:
-                    zip.writestr("LoOP_result.csv", csv)
-                    zip.writestr(uploaded_file.name, convert_df(df_in))
-                    
-                    Codes = ''
-                    with open("loop_functions.py", encoding='utf8') as f:
-                        for s_line in f:
-                            Codes += s_line
-                    
-                    zip.writestr("loop_functions.py", Codes)
-                    f.close()
 
-                    Codes = ''
-                    path = 'template.py'
-                    csv_name = uploaded_file.name
-                    filetype_bool = False
-                    if filetype=='time':
-                        filetype_bool = True
+        
 
-                    with open(path, encoding='utf8') as f:
-                        for s_line in f:
-                            
-                            if 'csv_name =' in s_line:
-                                Codes += '    csv_name = "'+csv_name+'"\n'
-                            elif 'extent =' in s_line:
-                                Codes += '    extent = '+str(int(extent))+'\n'
-                            elif 'n_neighbors =' in s_line:
-                                Codes += '    n_neighbors = '+str(n_neighbors)+'\n'
-                            elif 'time_series =' in s_line:
-                                Codes += '    time_series = '+str(filetype_bool)+'\n'
-                            else:
-                                Codes += s_line
-                    
-                    zip.writestr("sample_main.py", Codes)
-                    f.close()
+        ### 初期状態を示す状態変数をFalse
+        st.session_state.initial_load = False
 
-                buffer.seek(0)
-
-                st.download_button(
-                    label="Download sample code as ZIP",
-                    data=buffer,  # Download buffer
-                    file_name="sample.zip" 
-                )
-
-            
-
-            ### 初期状態を示す状態変数をFalse
-            st.session_state.initial_load = False
-
-            st.session_state.date = Date
-            st.session_state.score = scores
+        st.session_state.date = Date
+        st.session_state.score = scores
             
             
         # ### 初回。
